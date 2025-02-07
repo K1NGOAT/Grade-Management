@@ -8,10 +8,11 @@ struct Student {
 
 // MARK: - Core Functions
 func loadStudents() -> [Student] {
-    guard let filePath = Bundle.main.path(forResource: "students", ofType: "csv") else {
-        print("CSV file not found!")
-        return []
-    }
+   let filePath = "./students.csv" // Direct path to the CSV file
+guard FileManager.default.fileExists(atPath: filePath) else {
+    print("CSV file not found!")
+    return []
+}
     
     do {
         let csvData = try String(contentsOfFile: filePath, encoding: .utf8)
