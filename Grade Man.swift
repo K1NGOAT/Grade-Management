@@ -8,11 +8,10 @@ struct Student {
 
 // MARK: - Core Functions
 func loadStudents() -> [Student] {
-   let filePath = "./students.csv" // Direct path to the CSV file
-guard FileManager.default.fileExists(atPath: filePath) else {
-    print("CSV file not found!")
-    return []
-}
+    guard let filePath = Bundle.main.path(forResource: "students", ofType: "csv") else {
+        print("CSV file not found!")
+        return []
+    }
     
     do {
         let csvData = try String(contentsOfFile: filePath, encoding: .utf8)
@@ -32,7 +31,7 @@ guard FileManager.default.fileExists(atPath: filePath) else {
             students.append(Student(name: name, grades: grades))
         }
         
-        return students // ✅ Correct return
+        return students
     } catch {
         print("Error reading CSV file: \(error)")
         return []
@@ -178,60 +177,56 @@ func handleFilterByGradeRange(students: [Student]) {
     }
 }
 
-// MARK: - Main Program
-func main() {
-    var students = loadStudents()
-    var shouldQuit = false
+// MARK: - Main Program Logic
+var students = loadStudents()
+var shouldQuit = false
+
+while !shouldQuit {
+    print("""
+    \nWelcome to the Grade Manager!
     
-    while !shouldQuit {
-        print("""
-        \nWelcome to the Grade Manager!
-        
-        What would you like to do? (Enter the number):
-        1. Display grade of a single student
-        2. Display all grades for a student
-        3. Display all grades of ALL students
-        4. Find the average grade of the class
-        5. Find the average grade of an assignment
-        6. Find the lowest grade in the class
-        7. Find the highest grade of the class
-        8. Filter students by grade range
-        9. Update a student's grade
-        10. Quit
-        """)
-        
-        switch getMenuChoice() {
-        case 1:
-            displayStudentGrade(students: students)
-        case 2:
-            displayAllGradesForStudent(students: students)
-        case 3:
-            displayAllGradesAllStudents(students: students)
-        case 4:
-            let average = calculateClassAverage(students: students)
-            print("\nThe class average is: \(String(format: "%.2f", average))")
-        case 5:
-            handleAssignmentAverage(students: students)
-        case 6:
-            let (name, average) = findLowestGrade(students: students)
-            print("\n\(name) has the lowest grade: \(String(format: "%.2f", average))")
-        case 7:
-            let (name, average) = findHighestGrade(students: students)
-            print("\n\(name) has the highest grade: \(String(format: "%.2f", average))")
-        case 8:
-            handleFilterByGradeRange(students: students)
-        case 9:
-            let name = getStudentName(students: students)
-            if let index = students.firstIndex(where: { $0.name.lowercased() == name.lowercased() }) {
-                updateGrade(for: &students[index])
-            }
-        case 10:
-            print("\nHave a great rest of your day!")
-            shouldQuit = true
-        default:
-            break
+    What would you like to do? (Enter the number):
+    1. Display grade of a single student
+    2. Display all grades for a student
+    3. Display all grades of ALL students
+    4. Find the average grade of the class
+    5. Find the average grade of an assignment
+    6. Find the lowest grade in the class
+    7. Find the highest grade of the class
+    8. Filter students by grade range
+    9. Update a student's grade
+    10. Quit
+    """)
+    
+    switch getMenuChoice() {
+    case 1:
+        displayStudentGrade(students: students)
+    case 2:
+        displayAllGradesForStudent(students: students)
+    case 3:
+        displayAllGradesAllStudents(students: students)
+    case 4:
+        let average = calculateClassAverage(students: students)
+        print("\nThe class average is: \(String(format: "%.2f", average))")
+    case 5:
+        handleAssignmentAverage(students: students)
+    case 6:
+        let (name, average) = findLowestGrade(students: students)
+        print("\n\(name) has the lowest grade: \(String(format: "%.2f", average))")
+    case 7:
+        let (name, average) = findHighestGrade(students: students)
+        print("\n\(name) has the highest grade: \(String(format: "%.2f", average))")
+    case 8:
+        handleFilterByGradeRange(students: students)
+    case 9:
+        let name = getStudentName(students: students)
+        if let index = students.firstIndex(where: { $0.name.lowercased() == name.lowercased() }) {
+            updateGrade(for: &students[index])
         }
+    case 10:
+        print("\nHave a great rest of your day!")
+        shouldQuit = true
+    default:
+        break
     }
 }
-
-main()
